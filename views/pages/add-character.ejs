@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include ('../components/head') %>
+</head>
+
+<body class="container">
+
+    <header>
+        <%- include ('../components/header') %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+            <h1>Add Character</h1>
+            <form id="addForm"> 
+                <p>Name: <input name='name' /></p>
+                <p>Class: 
+                    <select name='charClass'>
+                            <option value="">Choose your class:</option>
+                            <% classes.forEach( function(charClass) { %>
+                                <option value="<%= charClass._id %>"><%= charClass.name %></option>
+                            <% }) %>
+                    </select>
+                </p>
+                <p>Level: <input name='level' /></p>
+                <p>Race:  
+                    <select name='race'>
+                        <option value="">Choose your race:</option>
+                        <% races.forEach( function(race) { %>
+                            <option value="<%= race._id %>"><%= race.name %></option>
+                        <% }) %>
+                            
+                    </select>
+                </p>
+                <p>Experience: <input name='experience' /></p>
+                
+                <input id="submitBtn" type="submit" value="Submit" />
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <%- include ('../components/footer') %>
+    </footer>
+    <script type="text/javascript">
+        // define the form element
+        const form = document.getElementById('addForm');
+
+        // handle the form submit event
+        form.addEventListener('submit', (event) => {
+            // prevent the form submit event from doing anything (stop the NORMAL event behavior)
+            event.preventDefault();
+
+            // find all the form 'input' (text fields) & 'select' (dropdowns)
+            // at the same time convert them to an array (using Slice)
+            const inputs = [].slice.call(document.querySelectorAll('input'));
+            const selects = [].slice.call(document.querySelectorAll('select'));
+
+             // find all the form 'select' (dropdowns) & at the same time convert them to an array (using Slice)
+            console.log('inputs: ', inputs);
+            console.log('selects: ', selects);
+
+            // create object to hold the form data we plan to submit
+            const submitData = {};
+
+            // add properties to the the object corresponding with their value
+            inputs.forEach((input) =>
+            {
+                // submitData is an object, but we use [] to
+                // define properties when those properties are held in variables
+                submitData[input.name] = input.value;
+            });
+            selects.forEach((select) =>
+            {
+                submitData[select.name] = select.value;
+            });
+
+            // now that the data is ready to submit {submitData} object
+            // it's time to send that data to the backend API
+
+            // we cannot use the default fetch options (? what are the default options ?)
+            // so we specify our own
+            const fetchOptions = {
+                // the method must match the method of our api route
+                method: 'POST',
+                // we are sending JSON so we have to tell it that
+                headers: {
+                    // without this matching header option the body is sent as an empty object
+                    'Content-Type': 'application/json'
+                },
+                // this is the data we are sending
+                body: JSON.stringify(submitData),
+            };
+            // connection to the backend router
+            fetch('http://localhost:3333/api/characters', fetchOptions)
+            .then(response => 
+            {
+                console.log('potential error: ', response);
+                return response.json();
+            })
+            .then((data) =>
+            {
+                console.log('submission data: ', data);
+            })
+            .catch((err) => {
+                console.log('there was a fetch error: ', err);
+            })
+
+            console.log('submitted: ', submitData)
+        });
+
+        
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include ('../components/head') %>
+</head>
+
+<body class="container">
+
+    <header>
+        <%- include ('../components/header') %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+            <h1>WoW Characters</h1>
+            <ul id='characterList'>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <%- include ('../components/footer') %>
+    </footer>
+    <script>
+        const characterList = document.getElementById('characterList');
+        
+        function getCharacters()
+        {
+            fetch('http://localhost:3333/api/characters')
+            .then((response) =>
+            {
+                return response.json();
+            })
+            .then((data) =>
+            {
+                console.log('data: ',data);
+                // after verifying data is an array
+                for( let i=0; i<data.length; i++)
+                {
+                    const character = data[i];
+                    const item = document.createElement('li');
+                    item.textContent = character.name;
+                    characterList.appendChild(item);
+                }
+            })
+            .catch((err) =>
+            {
+                console.log('could not get data: ', err);
+            })
+        }
+        getCharacters();
+    </script>
+
+</body>
+
+</html>
